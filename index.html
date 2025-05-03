@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rechenelfen-Website</title>
+    <style>
+        body {
+            background: radial-gradient(circle at 20% 20%, rgba(140, 110, 175, 0.8), transparent),
+                        radial-gradient(circle at 80% 20%, rgba(120, 180, 220, 0.6), transparent),
+                        radial-gradient(circle at 50% 70%, rgba(110, 180, 190, 0.6), transparent);
+            background-size: 200% 200%;
+            animation: backgroundAnimation 10s ease infinite;
+            font-family: Arial, sans-serif;
+            color: white;
+            text-align: center;
+            padding-top: 20%;
+        }
+
+        @keyframes backgroundAnimation {
+            0% {background-position: 0% 0%;}
+            50% {background-position: 100% 100%;}
+            100% {background-position: 0% 0%;}
+        }
+
+        input {
+            margin-top: 20px;
+            font-size: 16px;
+            padding: 5px;
+            border-radius: 5px;
+            border: none;
+        }
+
+        h1, h2, p {
+            margin: 10px 0;
+        }
+
+        .gratulation {
+            font-size: 2em;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Löse die Rechenaufgabe!</h1>
+    <h2 id="aufgabe"></h2>
+    <input type="text" id="antwort" placeholder="Deine Antwort hier">
+    <p id="meldung"></p>
+
+    <script>
+        const aufgabeElement = document.getElementById('aufgabe');
+        const antwortElement = document.getElementById('antwort');
+        const meldungElement = document.getElementById('meldung');
+
+        let korrektAntwort;
+        let aufgabeGeloest = false;
+
+        function neueAufgabe() {
+            if (!aufgabeGeloest) {
+                const zahl1 = Math.floor(Math.random() * 100);
+                const zahl2 = Math.floor(Math.random() * 100);
+                korrektAntwort = zahl1 + zahl2;
+                aufgabeElement.textContent = `${zahl1} + ${zahl2} = ?`;
+                antwortElement.value = '';
+                meldungElement.textContent = '';
+            }
+        }
+
+        antwortElement.addEventListener('input', () => {
+            if (parseInt(antwortElement.value) === korrektAntwort) {
+                aufgabeGeloest = true;
+                aufgabeElement.textContent = '';
+                antwortElement.style.display = 'none';
+                meldungElement.textContent = "Gratulation du Rechenelfe!";
+                meldungElement.classList.add('gratulation');
+            }
+        });
+
+        setInterval(neueAufgabe, 5000);
+        neueAufgabe();
+    </script>
+</body>
+</html>
