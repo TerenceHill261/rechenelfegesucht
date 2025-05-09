@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rechenaufgaben</title>
+    <title>Aminosäuren-Puzzle</title>
     <style>
         body {
             background: radial-gradient(circle at 20% 20%, rgba(140, 110, 175, 0.8), transparent),
@@ -14,22 +14,15 @@
             font-family: Arial, sans-serif;
             color: white;
             text-align: center;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            padding-top: 20%;
             margin: 0;
+            height: 100vh;
         }
 
         @keyframes backgroundAnimation {
             0% {background-position: 0% 0%;}
             50% {background-position: 100% 100%;}
             100% {background-position: 0% 0%;}
-        }
-
-        .hidden {
-            display: none;
         }
 
         input {
@@ -39,33 +32,31 @@
             border-radius: 5px;
             border: none;
             outline: none;
+            animation: inputAnimation 1s infinite alternate;
+        }
+
+        @keyframes inputAnimation {
+            0% {transform: translateX(0);}
+            100% {transform: translateX(10px);}
+        }
+
+        h1, h2, p {
+            margin: 10px 0;
         }
 
         .gratulation {
             font-size: 2em;
             font-weight: bold;
         }
-
-        .counter, .timer {
-            margin: 20px;
-            font-size: 1.2em;
-        }
     </style>
 </head>
 <body>
-    <div id="intro">
-        <h1>Macht euch bereit eure Lieblingsaufgaben zu lösen:</h1>
-        <h2>Kopfrechnen gefragt</h2>
-        <button onclick="startGame()">Weiter</button>
-    </div>
-    <div id="spielbereich" class="hidden">
-        <h1>Löse die Rechenaufgabe!</h1>
-        <h2 id="aufgabe"></h2>
-        <input type="text" id="antwort" placeholder="Deine Antwort hier">
-        <p class="counter"><span id="score">0</span>/3 Aufgaben richtig gelöst</p>
-        <p class="timer">Verbleibende Zeit: <span id="zeit">10.00</span> Sekunden</p>
-        <p id="meldung" class="gratulation"></p>
-    </div>
+    <h1>Löse die Rechenaufgabe!</h1>
+    <h2 id="aufgabe"></h2>
+    <input type="text" id="antwort" placeholder="Deine Antwort hier">
+    <p class="counter"><span id="score">0</span>/3 Aufgaben richtig gelöst</p>
+    <p class="timer">Verbleibende Zeit: <span id="zeit">5.00</span> Sekunden</p>
+    <p id="meldung"></p>
 
     <script>
         const aufgabeElement = document.getElementById('aufgabe');
@@ -73,47 +64,39 @@
         const meldungElement = document.getElementById('meldung');
         const scoreElement = document.getElementById('score');
         const zeitElement = document.getElementById('zeit');
-        const spielbereich = document.getElementById('spielbereich');
-        const intro = document.getElementById('intro');
 
         let korrektAntwort;
+        let aufgabeGeloest = false;
         let aufgabenGezaehlt = 0;
-        let zeitProAufgabe = 10000; // 10 Sekunden in Millisekunden
+        let zeitProAufgabe = 5000; // 5 Sekunden in Millisekunden
         let timer;
 
-        function startGame() {
-            intro.classList.add('hidden');
-            spielbereich.classList.remove('hidden');
-            neueAufgabe();
-        }
-
         function neueAufgabe() {
-            if (aufgabenGezaehlt >= 3) {
-                meldungElement.textContent = "Ihr seid des Geschenkes würdig!";
-                spielbereich.innerHTML = '';  // Leert den Spielbereich
-                spielbereich.appendChild(meldungElement);
-                meldungElement.style.display = 'block';
-                return;
+            if (aufgabenGezaehlt < 3 && !aufgabeGeloest) {
+                const zahl1 = Math.floor(Math.random() * 100);
+                const zahl2 = Math.floor(Math.random() * 100);
+                korrektAntwort = zahl1 + zahl2;
+                aufgabeElement.textContent = `${zahl1} + ${zahl2} = ?`;
+                antwortElement.value = '';
+                meldungElement.textContent = '';
+                startTimer();
             }
-
-            if (timer) clearInterval(timer);
-            
-            const zahl1 = Math.floor(Math.random() * 100);
-            const zahl2 = Math.floor(Math.random() * 100);
-            korrektAntwort = zahl1 + zahl2;
-            aufgabeElement.textContent = `${zahl1} + ${zahl2} = ?`;
-            antwortElement.value = '';
-            meldungElement.textContent = '';
-
-            startTimer();
         }
 
         antwortElement.addEventListener('input', () => {
             if (parseInt(antwortElement.value) === korrektAntwort) {
+                clearInterval(timer);
                 aufgabenGezaehlt++;
                 scoreElement.textContent = aufgabenGezaehlt;
-                zeitProAufgabe -= 1000; // Reduziere die Zeit um 1 Sekunde
-                neueAufgabe();
+                if (aufgabenGezaehlt >= 3) {
+                    aufgabeElement.textContent = '';
+                    antwortElement.style.display = 'none';
+                    meldungElement.textContent = "Ihr seid des Geschenkes würdig!";
+                    meldungElement.classList.add('gratulation');
+                } else {
+                    zeitProAufgabe -= 1000; // Reduziere die Zeit für die nächste Aufgabe
+                    neueAufgabe();
+                }
             }
         });
 
@@ -127,11 +110,12 @@
                 
                 if (verbleibendeZeit <= 0) {
                     clearInterval(timer);
-                    meldungElement.textContent = "Zeit abgelaufen!";
-                    antwortElement.style.display = 'none';
+                    neueAufgabe(); // Neue Aufgabe beginnen
                 }
             }, 10);
         }
+
+        neueAufgabe();
     </script>
 </body>
 </html>
