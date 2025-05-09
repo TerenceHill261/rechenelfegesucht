@@ -19,6 +19,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            margin: 0;
         }
 
         @keyframes backgroundAnimation {
@@ -108,17 +109,20 @@
             startTimer();
         }
 
-        antwortElement.addEventListener('input', () => {
-            if (parseInt(antwortElement.value) === korrektAntwort) {
-                falschGezaehlt = 0; // Reset falsche Antworten
-                aufgabenGezaehlt++;
-                scoreElement.textContent = aufgabenGezaehlt;
-                zeitProAufgabe = Math.max(5000, zeitProAufgabe - 1000); // Minimum 5 Sekunden
-                neueAufgabe();
-            } else {
+        antwortElement.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
                 clearInterval(timer);
-                penalizeUser();
-                neueAufgabe();
+                if (parseInt(antwortElement.value) === korrektAntwort) {
+                    falschGezaehlt = 0; // Reset falsche Antworten
+                    aufgabenGezaehlt++;
+                    scoreElement.textContent = aufgabenGezaehlt;
+                    zeitProAufgabe = Math.max(5000, zeitProAufgabe - 1000); // Minimum 5 Sekunden
+                    neueAufgabe();
+                } else {
+                    penalizeUser();
+                    neueAufgabe();
+                }
             }
         });
 
@@ -127,26 +131,4 @@
             zeitProAufgabe += 1000; // Eine Sekunde gutgeschrieben
             if (falschGezaehlt >= 3) {
                 aufgabenGezaehlt = Math.max(0, aufgabenGezaehlt - 1); // Maximal 0 von 3
-                scoreElement.textContent = aufgabenGezaehlt;
-                falschGezaehlt = 0; // Reset falsche Antworten
-            }
-        }
-
-        function startTimer() {
-            let verbleibendeZeit = zeitProAufgabe / 1000;
-            zeitElement.textContent = verbleibendeZeit.toFixed(2);
-            
-            timer = setInterval(() => {
-                verbleibendeZeit -= 0.01;
-                zeitElement.textContent = verbleibendeZeit.toFixed(2);
-                
-                if (verbleibendeZeit <= 0) {
-                    clearInterval(timer);
-                    penalizeUser();
-                    neueAufgabe();
-                }
-            }, 10);
-        }
-    </script>
-</body>
-</html>
+                scoreElement.textContent = auf
