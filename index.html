@@ -63,7 +63,7 @@
         <h2 id="aufgabe"></h2>
         <input type="text" id="antwort" placeholder="Deine Antwort hier">
         <p class="counter"><span id="score">0</span>/3 Aufgaben richtig gelöst</p>
-        <p class="timer">Verbleibende Zeit: <span id="zeit">5.00</span> Sekunden</p>
+        <p class="timer">Verbleibende Zeit: <span id="zeit"></span> Sekunden</p>
         <p id="meldung" class="gratulation"></p>
     </div>
 
@@ -79,7 +79,6 @@
         let korrektAntwort;
         let aufgabenGezaehlt = 0;
         let falschGezaehlt = 0;
-        let zeitProAufgabe = 5000; // 5 Sekunden in Millisekunden
         let timer;
 
         function startGame() {
@@ -98,7 +97,7 @@
             }
 
             if (timer) clearInterval(timer);
-            
+
             const zahl1 = Math.floor(Math.random() * 100);
             const zahl2 = Math.floor(Math.random() * 100);
             korrektAntwort = zahl1 + zahl2;
@@ -106,6 +105,7 @@
             antwortElement.value = '';
             meldungElement.textContent = '';
 
+            setTimerBasedOnScore();
             startTimer();
         }
 
@@ -117,7 +117,6 @@
                     falschGezaehlt = 0; // Reset falsche Antworten
                     aufgabenGezaehlt++;
                     scoreElement.textContent = aufgabenGezaehlt;
-                    zeitProAufgabe = Math.max(5000, zeitProAufgabe - 1000); // Minimum 5 Sekunden
                     neueAufgabe();
                 } else {
                     penalizeUser();
@@ -128,11 +127,21 @@
 
         function penalizeUser() {
             falschGezaehlt++;
-            zeitProAufgabe += 1000; // Eine Sekunde gutgeschrieben
+            setTimerBasedOnScore();
             if (falschGezaehlt >= 3) {
                 aufgabenGezaehlt = Math.max(0, aufgabenGezaehlt - 1); // Maximal 0 von 3
                 scoreElement.textContent = aufgabenGezaehlt;
                 falschGezaehlt = 0; // Reset falsche Antworten
+            }
+        }
+
+        function setTimerBasedOnScore() {
+            if (aufgabenGezaehlt === 0) {
+                zeitProAufgabe = 5000; // 5 Sekunden
+            } else if (aufgabenGezaehlt === 1) {
+                zeitProAufgabe = 4000; // 4 Sekunden
+            } else if (aufgabenGezaehlt === 2) {
+                zeitProAufgabe = 3000; // 3 Sekunden
             }
         }
 
