@@ -131,4 +131,26 @@
             zeitProAufgabe += 1000; // Eine Sekunde gutgeschrieben
             if (falschGezaehlt >= 3) {
                 aufgabenGezaehlt = Math.max(0, aufgabenGezaehlt - 1); // Maximal 0 von 3
-                scoreElement.textContent = auf
+                scoreElement.textContent = aufgabenGezaehlt;
+                falschGezaehlt = 0; // Reset falsche Antworten
+            }
+        }
+
+        function startTimer() {
+            let verbleibendeZeit = zeitProAufgabe / 1000;
+            zeitElement.textContent = verbleibendeZeit.toFixed(2);
+            
+            timer = setInterval(() => {
+                verbleibendeZeit -= 0.01;
+                zeitElement.textContent = verbleibendeZeit.toFixed(2);
+                
+                if (verbleibendeZeit <= 0) {
+                    clearInterval(timer);
+                    penalizeUser();
+                    neueAufgabe();
+                }
+            }, 10);
+        }
+    </script>
+</body>
+</html>
